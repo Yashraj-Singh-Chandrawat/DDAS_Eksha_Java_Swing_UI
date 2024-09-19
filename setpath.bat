@@ -1,0 +1,1 @@
+setx DDAS_DIRECTORIES "C:\Users\yashr\Downloads;C:\Users\yashr\Desktop\SIH_Test;null;null;null;null;null;null"

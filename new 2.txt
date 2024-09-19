@@ -1,0 +1,187 @@
+package org.example;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+
+class FDemo extends JFrame {
+    FDemo(DDA dda) {
+        setTitle("Data Duplicate Alert");
+        dda.DDAs();
+        add(dda);
+        setSize(500, 500);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setResizable(false);
+        setAlwaysOnTop(true); // Ensure the frame is always on top
+    }
+}
+
+class DDA extends JPanel {
+    ImageIcon img1, download1, open1, delete1;
+    Image img, download, open, delete;
+    JLabel l1, l2, l3, l4;
+    JButton b1, b2, b3;
+    Font titleFont, subtitleFont, pathFont;
+    String s;
+    JButton exit;
+
+    public void DDAs() {
+        setLayout(null);
+
+        // Load images
+        img1 = new ImageIcon("dd11.jpg");
+        img = img1.getImage();
+        open1 = new ImageIcon("open.jpg");
+        open = open1.getImage();
+        delete1 = new ImageIcon("delete.jpg");
+        delete = delete1.getImage();
+        download1 = new ImageIcon("download.png");
+        download = download1.getImage();
+
+        // Set fonts
+        titleFont = new Font("Arial", Font.BOLD, 28);
+        subtitleFont = new Font("Arial", Font.BOLD, 18);
+        pathFont = new Font("Arial", Font.PLAIN, 14); // Slightly smaller font for path
+
+        // Open button
+        b1 = new JButton("Open");
+        b1.setSize(120, 35);
+        b1.setLocation(40, 290);
+        b1.setBackground(new Color(76, 175, 80)); // Green color
+        b1.setForeground(Color.WHITE);
+        b1.setFocusPainted(false);
+        b1.setFont(new Font("Arial", Font.BOLD, 14));
+        b1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String filePath = s;
+                File file = new File(filePath);
+                if (file.exists()) {
+                    try {
+                        Desktop.getDesktop().open(file);
+                    } catch (IOException ex) {
+                        JOptionPane.showMessageDialog(null, "Error opening file: " + ex.getMessage());
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "File not found!");
+                }
+            }
+        });
+        add(b1);
+
+        // Delete button
+        b2 = new JButton("Delete");
+        b2.setSize(120, 35);
+        b2.setLocation(180, 290);
+        b2.setBackground(new Color(244, 67, 54)); // Red color
+        b2.setForeground(Color.WHITE);
+        b2.setFocusPainted(false);
+        b2.setFont(new Font("Arial", Font.BOLD, 14));
+         b2.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            String filePath1 = s; // for delete path
+                            File file1 = new File(filePath1);
+
+                            if (file1.exists()) {
+                                if (file1.delete()) {
+
+                                    JOptionPane.showMessageDialog(null, "File deleted successfully!");
+                                } else {
+                                    JOptionPane.showMessageDialog(null, "Failed to delete file!");
+                                }
+                            } else {
+                                JOptionPane.showMessageDialog(null, "File not found!");
+
+                            }
+                        }
+                    });
+
+        // Download button
+        b3 = new JButton("Download");
+        b3.setSize(120, 35);
+        b3.setLocation(320, 290);
+        b3.setBackground(new Color(33, 150, 243)); // Blue color
+        b3.setForeground(Color.WHITE);
+        b3.setFocusPainted(false);
+        b3.setFont(new Font("Arial", Font.BOLD, 14));
+        add(b3);
+
+        // Labels
+        l1 = new JLabel("File Duplicate Alert!!");
+        l1.setForeground(new Color(220, 20, 60)); // Red-Orange color
+        l1.setSize(300, 40);
+        l1.setLocation(100, 40);
+        l1.setFont(titleFont);
+        add(l1);
+
+        l2 = new JLabel("Duplicate File Found!!");
+        l2.setForeground(Color.gray); // Blue color
+        l2.setSize(300, 40);
+        l2.setLocation(100, 100);
+        l2.setFont(subtitleFont);
+        add(l2);
+
+        l3 = new JLabel("Do You Want to Delete?");
+        l3.setSize(300, 40);
+        l3.setLocation(100, 140);
+        l3.setFont(subtitleFont);
+        add(l3);
+
+        l4 = new JLabel("PATH: " + s);
+        l4.setSize(400, 40);
+        l4.setLocation(50, 200);
+        l4.setFont(pathFont);
+        l4.setForeground(Color.DARK_GRAY); // Dark gray color for better readability
+        add(l4);
+
+        // Username label
+        String userName = System.getProperty("user.name");
+        JLabel username = new JLabel("Username: " + userName);
+        username.setBounds(350, 5, 150, 30);
+        username.setFont(new Font("Arial", Font.PLAIN, 12));
+        username.setForeground(Color.BLACK);
+        add(username);
+
+        // Exit button
+        exit = new JButton("Close");
+        exit.setSize(120, 35);
+        exit.setLocation(180, 350);
+        exit.setBackground(new Color(158, 158, 158)); // Gray color
+        exit.setForeground(Color.WHITE);
+        exit.setFocusPainted(false);
+        exit.setFont(new Font("Arial", Font.BOLD, 14));
+        exit.addActionListener((e) -> {
+            Window window = SwingUtilities.windowForComponent(DDA.this);
+            if (window != null) {
+                window.dispose();
+            }
+        });
+        add(exit);
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        g.drawImage(img, 0, 0, this);
+        g.drawImage(open, 50, 250, this);
+        g.drawImage(delete, 200, 250, this);
+        g.drawImage(download, 350, 250, this);
+    }
+
+    public void setPath(JSONObject object) throws JSONException {
+        s = object.getString("filePath");
+    }
+
+    public void showPopup(DDA a) throws JSONException {
+        FDemo f1 = new FDemo(a);
+        f1.setVisible(true);
+    }
+}
